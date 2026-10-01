@@ -150,31 +150,43 @@ async function init3D() {
     el.onclick = () => { select(item.index, item.lake ?? null, true); focus(item.p); };
     $('labels').append(el); markerLabels.push({ ...item, el, top });
   }
-  let transition = null;
+  let transition = null, viewPreset = 'overview', narrow = innerWidth < 760;
+  function setPreset(value) {
+    viewPreset = value; $('overview').setAttribute('aria-pressed', String(value === 'overview')); $('top').setAttribute('aria-pressed', String(value === 'top'));
+  }
+  const overviewPosition = () => new THREE.Vector3(9, 12, 15).multiplyScalar(innerWidth < 760 ? 2.3 : 1);
+  const topPosition = () => new THREE.Vector3(.7, innerWidth < 760 ? 43 : 19, -.19);
   function moveCamera(pos, target) {
     controls.autoRotate = false; $('rotate').setAttribute('aria-pressed', 'false');
     transition = { start: performance.now(), from: camera.position.clone(), to: pos, targetFrom: controls.target.clone(), targetTo: target };
     if (reducedMotion) { camera.position.copy(pos); controls.target.copy(target); transition = null; }
   }
   const overview = () => {
-    $('overview').setAttribute('aria-pressed', 'true'); $('top').setAttribute('aria-pressed', 'false');
-    moveCamera(new THREE.Vector3(9, 12, 15).multiplyScalar(innerWidth < 760 ? 2.3 : 1), new THREE.Vector3(.7, .45, -.2));
+    setPreset('overview');
+    moveCamera(overviewPosition(), new THREE.Vector3(.7, .45, -.2));
   };
   $('overview').onclick = overview;
-  $('top').onclick = () => { $('top').setAttribute('aria-pressed', 'true'); $('overview').setAttribute('aria-pressed', 'false'); moveCamera(new THREE.Vector3(.7, innerWidth < 760 ? 43 : 19, -.19), new THREE.Vector3(.7, .3, -.2)); };
-  $('rotate').onclick = () => { transition = null; controls.autoRotate = !controls.autoRotate; $('rotate').setAttribute('aria-pressed', String(controls.autoRotate)); };
+  $('top').onclick = () => { setPreset('top'); moveCamera(topPosition(), new THREE.Vector3(.7, .3, -.2)); };
+  $('rotate').onclick = () => { transition = null; setPreset(null); controls.autoRotate = !controls.autoRotate; $('rotate').setAttribute('aria-pressed', String(controls.autoRotate)); };
   $('ghost').onclick = () => { ghost.visible = !ghost.visible; $('ghost').setAttribute('aria-pressed', String(ghost.visible)); };
   $('texture').onclick = () => { const on = material.map === null; material.map = on ? texture : null; material.color.set(on ? '#ffffff' : '#42605a'); material.needsUpdate = true; $('texture').setAttribute('aria-pressed', String(on)); };
   function exaggerate() { world.scale.y = Number($('exag').value); $('exag-value').textContent = `${world.scale.y}×`; }
   $('exag').oninput = exaggerate; exaggerate();
-  focus = p => { $('overview').setAttribute('aria-pressed', 'false'); $('top').setAttribute('aria-pressed', 'false'); const target = routePosition(p); target.y *= world.scale.y; moveCamera(target.clone().add(new THREE.Vector3(3, 4, 5)), target); };
-  controls.addEventListener('start', () => { transition = null; });
+  focus = p => { setPreset(null); const target = routePosition(p); target.y *= world.scale.y; moveCamera(target.clone().add(new THREE.Vector3(3, 4, 5)), target); };
+  controls.addEventListener('start', () => { transition = null; setPreset(null); });
   const v = new THREE.Vector3();
   function resize() {
     const w = innerWidth, h = innerHeight; renderer.setSize(w, h, false); camera.aspect = w / h;
-    camera.setViewOffset(w, h, w < 760 ? 0 : -100, w < 760 ? 190 : 80, w, h); camera.updateProjectionMatrix(); if ($('overview').getAttribute('aria-pressed') === 'true') overview(); drawProfile();
+    camera.setViewOffset(w, h, w < 760 ? 0 : -100, w < 760 ? 190 : 80, w, h); camera.updateProjectionMatrix();
+    const nowNarrow = w < 760;
+    if (nowNarrow !== narrow && viewPreset) {
+      transition = null; camera.position.copy(viewPreset === 'overview' ? overviewPosition() : topPosition());
+      controls.target.set(.7, viewPreset === 'overview' ? .45 : .3, -.2);
+    }
+    narrow = nowNarrow; drawProfile();
   }
-  addEventListener('resize', resize); resize(); camera.position.copy(new THREE.Vector3(9, 12, 15).multiplyScalar(innerWidth < 760 ? 2.3 : 1)); controls.target.set(.7, .45, -.2);
+  camera.position.copy(overviewPosition()); controls.target.set(.7, .45, -.2);
+  addEventListener('resize', resize); resize();
   renderer.setAnimationLoop(() => {
     if (transition) {
       const t = Math.min(1, (performance.now() - transition.start) / 700), ease = t * t * (3 - 2 * t);
@@ -208,6 +220,7 @@ async function flatFallback() {
   const old = $('map'), canvas = old.cloneNode(false); old.replaceWith(canvas);
   const c = canvas.getContext('2d'), img = new Image(); img.src = 'data/satellite.jpg'; await img.decode();
   $('tools').hidden = true;
+  document.querySelector('.profile-foot span:first-child').textContent = '卫星俯视图 · 用剖面或七湖列表定位';
   renderMap = () => {
     const dpr = Math.min(devicePixelRatio, 2); canvas.width = innerWidth * dpr; canvas.height = innerHeight * dpr; c.setTransform(dpr, 0, 0, dpr, 0, 0);
     c.fillStyle = '#0a1218'; c.fillRect(0, 0, innerWidth, innerHeight);

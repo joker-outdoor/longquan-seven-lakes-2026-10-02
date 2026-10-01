@@ -66,14 +66,12 @@ def main():
     for name,(x,y) in zip(data['lakeOrder'],image_points):
         index=min(range(len(pts)),key=lambda i:(pts[i][4]-x/1200)**2+(pts[i][5]-y/1752)**2)
         data['lakes'].append({'name':name,'index':index,'positionSource':'user-supplied order; approximate satellite interpretation, snapped to nearest track point'})
-    (out/'route.json').write_text(json.dumps(data,ensure_ascii=False,separators=(',',':')))
     im,box=mosaic(bounds,14,'sat');size=(1200,round(1200*h/w))
-    im=im.transform(size,Image.Transform.EXTENT,box,Image.Resampling.BICUBIC);im.save(out/'satellite.jpg',quality=90)
+    im=im.transform(size,Image.Transform.EXTENT,box,Image.Resampling.BICUBIC);satellite=io.BytesIO();im.save(satellite,format='JPEG',quality=90)
     preview=im.copy();dr=ImageDraw.Draw(preview)
     dr.line([(p[4]*size[0],p[5]*size[1]) for p in pts],fill='#ffda54',width=4)
     for k in range(19):
         p=min(pts,key=lambda p:abs(p[3]-k));x,y=p[4]*size[0],p[5]*size[1];dr.ellipse((x-10,y-10,x+10,y+10),fill='black');dr.text((x-5,y-6),str(k),fill='white')
-    preview.save('/private/tmp/longquan-route-preview.jpg')
     dem,box=mosaic(bounds,12,'dem');gw=181;gh=round((gw-1)*h/w)+1
     pix=dem.load();elev=[]
     for y in range(gh):
@@ -83,11 +81,17 @@ def main():
                 r,g,b=pix[min(ix+dx,dem.width-1),min(iy+dy,dem.height-1)];return r*256+g+b/256-32768
             v=el(0,0)*(1-fx)*(1-fy)+el(1,0)*fx*(1-fy)+el(0,1)*(1-fx)*fy+el(1,1)*fx*fy
             elev.append(round(v,1))
-    (out/'terrain.json').write_text(json.dumps({'w':gw,'h':gh,'elevations':elev},separators=(',',':')))
+    terrain={'w':gw,'h':gh,'elevations':elev}
     g=ET.Element('gpx',version='1.1',creator='Joker Outdoor',xmlns=ns['g']);trk=ET.SubElement(g,'trk');ET.SubElement(trk,'name').text='龙泉七湖连穿';seg=ET.SubElement(trk,'trkseg')
     for lon,lat,e,*_ in pts:
         p=ET.SubElement(seg,'trkpt',lat=str(lat),lon=str(lon));ET.SubElement(p,'ele').text=str(e)
-    ET.ElementTree(g).write(out/'route.gpx',encoding='utf-8',xml_declaration=True)
+    gpx=io.BytesIO();ET.ElementTree(g).write(gpx,encoding='utf-8',xml_declaration=True)
+    # Complete downloads, calculations and the optional preview before publishing files.
+    preview.save(Path(tempfile.gettempdir())/'longquan-route-preview.jpg')
+    (out/'route.json').write_text(json.dumps(data,ensure_ascii=False,separators=(',',':')))
+    (out/'satellite.jpg').write_bytes(satellite.getvalue())
+    (out/'terrain.json').write_text(json.dumps(terrain,separators=(',',':')))
+    (out/'route.gpx').write_bytes(gpx.getvalue())
     print(json.dumps({'points':len(pts),'stats':data['stats'],'terrain':[gw,gh,min(elev),max(elev)],'sizeKm':[w,h]},ensure_ascii=False))
 
 if __name__=='__main__': main()
