@@ -54,4 +54,4 @@ python3 scripts/build_data.py /path/to/original.gpx --output data
 
 参照贡嘎 100 的 46 秒飞越风格生成，提供 [竖屏 MP4](videos/seven-lakes-portrait.mp4)、[横屏 MP4](videos/seven-lakes-landscape.mp4) 和 [浏览器动画](video.html)。30 fps，H.264 / yuv420p，1080×1920 / 1920×1080，无音轨。七湖定位沿用页面的概略标注；字幕区分原轨迹日期 2025-11-02 和制作日期 2026-10-02。
 
-视频场景和导出脚本来自公开 `route-visualization-template` 的视频功能提交 `151aac10ef386d0c37652edafdcff0ffda1c6fbd`；使用本仓 `data/` 渲染，不重新推断地标。重新生成：安装 Microsoft Edge、ffmpeg 和 Node.js 后，运行 `npm ci` 与 `node scripts/render_video.mjs --output /path/to/new.mp4`；横屏增加 `--width 1920 --height 1080`。默认 46 秒，逐帧指定动画时间；已有文件拒绝覆盖。
+视频场景和导出脚本来自公开 `route-visualization-template` 的视频功能提交 `03e76b9e30b3a297233d1937959cf0f47d1199cb`；使用本仓 `data/` 渲染，不重新推断地标。重新生成：安装 Microsoft Edge、ffmpeg 和 Node.js 后，运行 `npm ci` 与 `node scripts/render_video.mjs --output /path/to/new.mp4`；横屏增加 `--width 1920 --height 1080`。默认 46 秒，逐帧指定动画时间；已有文件拒绝覆盖。
