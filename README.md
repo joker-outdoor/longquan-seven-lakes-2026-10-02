@@ -49,3 +49,9 @@ python3 scripts/build_data.py /path/to/original.gpx --output data
 - 卫星影像：[Esri World Imagery](https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer)，© Esri, Maxar, Earthstar Geographics, and the GIS User Community。使用缩放级别 14 的本区域裁切影像；影像版权归提供者，不授予再许可。
 - 地形：[Mapzen Terrain Tiles / Tilezen](https://github.com/tilezen/joerd)，SRTM 等公开数据，Terrarium 编码；原始数据源署名与许可见 [Tilezen attribution](https://github.com/tilezen/joerd/blob/master/docs/attribution.md)。页面采用 WGS84 坐标、Web Mercator 图像投影及局部地面尺度。
 - 渲染：[Three.js 0.160.0](https://github.com/mrdoob/three.js/tree/r160)，MIT，完整许可证在 `vendor/LICENSE`。`vendor/` 保留官方文件原文。
+
+## 3D 轨迹飞越视频
+
+参照贡嘎 100 的 46 秒飞越风格生成，提供 [竖屏 MP4](videos/seven-lakes-portrait.mp4)、[横屏 MP4](videos/seven-lakes-landscape.mp4) 和 [浏览器动画](video.html)。30 fps，H.264 / yuv420p，1080×1920 / 1920×1080，无音轨。七湖定位沿用页面的概略标注；字幕区分原轨迹日期 2025-11-02 和制作日期 2026-10-02。
+
+视频场景和导出脚本来自公开 `route-visualization-template` 的视频功能提交 `03e76b9e30b3a297233d1937959cf0f47d1199cb`；使用本仓 `data/` 渲染，不重新推断地标。重新生成：安装 Microsoft Edge、ffmpeg 和 Node.js 后，运行 `npm ci` 与 `node scripts/render_video.mjs --output /path/to/new.mp4`；横屏增加 `--width 1920 --height 1080`。默认 46 秒，逐帧指定动画时间；已有文件拒绝覆盖。
