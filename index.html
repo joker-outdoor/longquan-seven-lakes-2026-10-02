@@ -21,10 +21,12 @@
 <ol id="lake-list"></ol>
 <p class="detail">湖名与顺序由 Joker 提供。地图标注为卫星图对照的概略位置；里程对应邻近轨迹点。</p>
 <details><summary>轨迹与数据说明</summary><p>七湖标注为概略定位。<br>页面制作：2026-10-02<br>原始轨迹：2025-11-02<br>距离按 GPX 坐标测算；爬升、下降与用时沿用 GPX 内记录，轨迹坐标测算 18.55 km，原记录里程 18.80 km。剖面使用原轨迹海拔；3D 路线贴合 DEM 地形。</p></details>
-<a class="download" href="data/route.gpx" download="龙泉七湖连穿.gpx">↓ 下载路线 GPX</a>
-<a class="download" href="video.html">▶ 3D 轨迹飞越</a>
-<a class="download" href="videos/seven-lakes-portrait.mp4" download>↓ 竖屏视频 · 46 秒</a>
-<a class="download" href="videos/seven-lakes-landscape.mp4" download>↓ 横屏视频 · 46 秒</a>
+<nav class="route-downloads" aria-label="路线与视频下载">
+<a class="download" href="data/route.gpx" download="龙泉七湖连穿.gpx" aria-label="下载路线 GPX">↓ GPX</a>
+<a class="download" href="video.html" aria-label="播放 3D 轨迹飞越">▶ 3D 飞越</a>
+<a class="download" href="videos/seven-lakes-portrait.mp4" download aria-label="下载竖屏视频 46 秒">↓ 竖屏 MP4</a>
+<a class="download" href="videos/seven-lakes-landscape.mp4" download aria-label="下载横屏视频 46 秒">↓ 横屏 MP4</a>
+</nav>
 </aside>
 <nav id="tools" aria-label="地图控制"><div class="tool-row panel"><button id="overview" aria-pressed="true">全景</button><button id="top" aria-pressed="false">俯视</button><button id="rotate" aria-pressed="false">旋转</button></div><div class="tool-row panel"><label for="exag">高度夸张 <input id="exag" type="range" min="1" max="5" step="0.5" value="3"></label><output id="exag-value">3×</output></div><div class="tool-row panel"><button id="texture" aria-pressed="true">卫星底图</button><button id="ghost" aria-pressed="true">显示遮挡段</button></div><div class="compass panel"><span id="north">▲<br>N</span></div></nav>
 <section id="profile" class="panel" aria-label="海拔剖面"><div class="profile-heading"><h2>ELEVATION <span>海拔剖面</span></h2><output id="readout">滑过剖面，查看地图位置</output></div><canvas id="chart" tabindex="0" aria-label="海拔剖面，可用左右方向键浏览路线"></canvas><div class="profile-foot"><span>拖动地图旋转 · 滚轮缩放 · 右键平移</span><span>WGS84 · GPX 记录 2025-11-02</span></div></section>

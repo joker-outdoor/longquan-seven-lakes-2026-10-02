@@ -5,3 +5,7 @@
 @media(max-width:760px) and (max-height:650px){#side{height:155px;bottom:195px}.stats strong{font-size:12px}#side details{display:none}#point-card{bottom:360px}}
 
 #tools[hidden],.map-label[hidden]{display:none}
+
+.route-downloads{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-top:12px}.route-downloads .download{margin:0}
+@media(max-width:760px){#side{height:220px}.route-downloads{grid-column:1 / -1;grid-template-columns:repeat(4,minmax(0,1fr));gap:5px;margin-top:0}.route-downloads .download{position:static;padding:7px 2px;font-size:9px;white-space:nowrap}}
+@media(max-width:760px) and (max-height:650px){#side{height:195px}}
